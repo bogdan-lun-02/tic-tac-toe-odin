@@ -1,19 +1,20 @@
 let game = {
   gameboard: [
-    'cell1',
-    'cell2',
-    'cell3',
-    'cell4',
-    'cell5',
-    'cell6',
-    'cell7',
-    'cell8',
-    'cell9'
+    'cell',
+    'cell',
+    'cell',
+    'cell',
+    'cell',
+    'cell',
+    'cell',
+    'cell',
+    'cell'
   ],
   logBoard: function () {
     console.log(this.gameboard.forEach(cell => console.log(cell))
     );
-  }
+  },
+
 }
 
 const player1 = {
@@ -39,12 +40,14 @@ const gameControl = {
   currentChoice: '',
   player1Choices: '',
   player2Choices: '',
+  gameOver: false,
 
   checkPlayerChoice: function () {
     if (game.gameboard[this.currentChoice] === 'X' ||
       game.gameboard[this.currentChoice] === 'O'
     ) {
       this.gameTurn();
+      this.switchActivePlayer();
     }
     else {
       this.activePlayer === 'player1' ? game.gameboard[this.currentChoice] = player1.symbol :
@@ -61,6 +64,7 @@ const gameControl = {
     this.activePlayer === 'player1' ? player1.makeTurn() : player2.makeTurn();
     gameControl.checkPlayerChoice();
     gameControl.checkForWin();
+    gameControl.checkForTie();
     game.logBoard();
     this.switchActivePlayer();
   },
@@ -75,7 +79,15 @@ const gameControl = {
     } else return;
   },
 
+  checkForTie: function () {
+    if ((this.gameOver !== true) && !(game.gameboard.includes('cell'))) {
+      alert('It is a tie');
+      this.gameOver = true;
+    }
+  },
+
   alertWinner: function () {
+    this.gameOver = true;
     alert(`${this.activePlayer} wins`);
   }
 };
@@ -87,4 +99,7 @@ const gameControl = {
 // Изначальная цель - построить логику игры. Отобразить игровое поле в консоли. Поле состоит из 9 клеток. Клетка может быть либо пустой, либо с крестиком, либо с ноликом.
 // В игру играют player1 и player2. Один из них ставит крестики, другой - нолики. Игроки ходят по очереди. Первым ходит player1. player1 выбирает клетку для хода. Игра должна проверить, не занята ли уже эта клетка.
 
-// После каждого сделанного хода игра должна проверять, не победил ли игрок который сделал ход. Игра проверит все ходы игрока и сравнит их с победными комбинациями. 
+// После каждого сделанного хода игра должна проверять, не победил ли игрок который сделал ход. Игра проверит все ходы игрока и сравнит их с победными комбинациями.
+
+// Отображение игры
+// 1. Создать пустое поле для игры.
