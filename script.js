@@ -90,8 +90,28 @@ const gameControl = {
     this.gameOver = true;
     alert(`${this.activePlayer} wins`);
   }
-};
+}
 
+const displayControl = {
+
+  renderGrid: function () {
+
+    for (let i = 0; i < 3; i++) {
+      document.querySelector('#container').appendChild(document.createElement('div')).
+        classList.add('row');
+    }
+
+    const rows = document.querySelectorAll('.row');
+    rows.forEach((row) => {
+      for (let i = 0; i < 3; i++) {
+        row.appendChild(document.createElement('div')).
+          classList.add('square');
+      }
+    })
+  }
+}
+
+window.addEventListener('DOMContentLoaded', displayControl.renderGrid)
 
 // Крестики-нолики - цель игры составить на игровом поле линию из трех символов по горизонтали, вертикали или диагонали.
 // Один игрок может ставить крестики, другой - нолики. Кто первый составил линию, тот победил. Возможна ничья если никто не победил и все свободные места на поле закончились. Поле состоит из 9 клеток.
