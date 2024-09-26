@@ -1,14 +1,14 @@
 let game = {
   gameboard: [
-    'cell',
-    'cell',
-    'cell',
-    'cell',
-    'cell',
-    'cell',
-    'cell',
-    'cell',
-    'cell'
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    ''
   ],
   logBoard: function () {
     console.log(this.gameboard.forEach(cell => console.log(cell))
@@ -19,8 +19,11 @@ let game = {
 
 const player1 = {
   symbol: 'X',
-  makeTurn: function () {
-    let x = prompt('Поставь Х');
+  makeTurn: function (x) {
+    if (game.gameboard[x] !== '') {
+      gameControl.switchActivePlayer();
+      return;
+    } else game.gameboard[x] = 'X';
     gameControl.currentChoice = x;
     gameControl.player1Choices += x;
   }
@@ -28,8 +31,11 @@ const player1 = {
 
 const player2 = {
   symbol: 'O',
-  makeTurn: function () {
-    let x = prompt('Поставь О');
+  makeTurn: function (x) {
+    if (game.gameboard[x] !== '') {
+      gameControl.switchActivePlayer();
+      return;
+    } else game.gameboard[x] = 'O';
     gameControl.currentChoice = x;
     gameControl.player2Choices += x;
   }
@@ -42,37 +48,38 @@ const gameControl = {
   player2Choices: '',
   gameOver: false,
 
-  checkPlayerChoice: function () {
-    if (game.gameboard[this.currentChoice] === 'X' ||
-      game.gameboard[this.currentChoice] === 'O'
-    ) {
-      this.gameTurn();
-      this.switchActivePlayer();
-    }
-    else {
-      this.activePlayer === 'player1' ? game.gameboard[this.currentChoice] = player1.symbol :
-        game.gameboard[this.currentChoice] = player2.symbol
-    }
+  // checkPlayerChoice: function () {
+  //   if (game.gameboard[this.currentChoice] === 'X' ||
+  //     game.gameboard[this.currentChoice] === 'O'
+  //   ) {
+  //     this.gameTurn(this.currentChoice);
+  //     this.switchActivePlayer();
+  //   }
+  //   else {
+  //     this.activePlayer === 'player1' ? game.gameboard[this.currentChoice] = player1.symbol :
+  //       game.gameboard[this.currentChoice] = player2.symbol
+  //   }
 
-  },
+  // },
 
   switchActivePlayer: function () {
     this.activePlayer === 'player1' ? this.activePlayer = 'player2' : this.activePlayer = 'player1';
   },
 
-  gameTurn: function () {
-    this.activePlayer === 'player1' ? player1.makeTurn() : player2.makeTurn();
-    gameControl.checkPlayerChoice();
+  gameTurn: function (x) {
+    this.activePlayer === 'player1' ? player1.makeTurn(x) : player2.makeTurn(x);
+    // gameControl.checkPlayerChoice();
     gameControl.checkForWin();
     gameControl.checkForTie();
     game.logBoard();
+    displayControl.updateGrid();
     this.switchActivePlayer();
   },
 
   checkForWin: function () {
     let arr = (this.activePlayer === 'player1' ? this.player1Choices : this.player2Choices);
     const winCombinations = ['048', '246', '345', '012', '678', '036', '147', '258'];
-    const intersection = winCombinations.find((element => element == arr));
+    const intersection = winCombinations.find((element => element === arr));
 
     if (intersection) {
       this.alertWinner()
@@ -80,7 +87,7 @@ const gameControl = {
   },
 
   checkForTie: function () {
-    if ((this.gameOver !== true) && !(game.gameboard.includes('cell'))) {
+    if ((this.gameOver !== true) && !(game.gameboard.includes(''))) {
       alert('It is a tie');
       this.gameOver = true;
     }
@@ -102,13 +109,33 @@ const displayControl = {
     }
 
     const rows = document.querySelectorAll('.row');
+
     rows.forEach((row) => {
       for (let i = 0; i < 3; i++) {
         row.appendChild(document.createElement('div')).
           classList.add('square');
       }
     })
+
+    const squares = document.querySelectorAll('.square');
+    let index = 0;
+
+    squares.forEach(square => {
+      square.setAttribute('data-index-number', index);
+      index++;
+      square.addEventListener('click', (e) => {
+        gameControl.gameTurn(e.target.dataset.indexNumber);
+      })
+    })
+  },
+
+  updateGrid: function () {
+    const squares = document.querySelectorAll('.square');
+    squares.forEach(square => {
+      square.textContent = game.gameboard[square.dataset.indexNumber];
+    })
   }
+
 }
 
 window.addEventListener('DOMContentLoaded', displayControl.renderGrid)
@@ -123,3 +150,5 @@ window.addEventListener('DOMContentLoaded', displayControl.renderGrid)
 
 // Отображение игры
 // 1. Создать пустое поле для игры.
+// 2. Нажатие на клетку должно менять значение в массиве
+// 3. Поле должно перезагружаться и отображать значения из массива
