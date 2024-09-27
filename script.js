@@ -10,10 +10,10 @@ let game = {
     '',
     ''
   ],
-  logBoard: function () {
-    console.log(this.gameboard.forEach(cell => console.log(cell))
-    );
-  },
+  // logBoard: function () {
+  //   console.log(this.gameboard.forEach(cell => console.log(cell))
+  //   );
+  // },
 
 }
 
@@ -71,17 +71,36 @@ const gameControl = {
     // gameControl.checkPlayerChoice();
     gameControl.checkForWin();
     gameControl.checkForTie();
-    game.logBoard();
+    // game.logBoard();
     displayControl.updateGrid();
     this.switchActivePlayer();
   },
 
   checkForWin: function () {
     let arr = (this.activePlayer === 'player1' ? this.player1Choices : this.player2Choices);
+
     const winCombinations = ['048', '246', '345', '012', '678', '036', '147', '258'];
-    const intersection = winCombinations.find((element => element === arr));
+    const intersection = winCombinations.find(combination => {
+
+      let counter = 0;
+      let comb = combination.split("");
+
+
+      for (let i = 0; i < 3; i++) {
+
+        if (arr.includes(comb[i])) {
+          counter++;
+        }
+      }
+
+      if (counter === 3) {
+        return true;
+      } else return false;
+    });
+
 
     if (intersection) {
+      displayControl.crossLine(intersection);
       this.alertWinner()
     } else return;
   },
@@ -90,12 +109,15 @@ const gameControl = {
     if ((this.gameOver !== true) && !(game.gameboard.includes(''))) {
       alert('It is a tie');
       this.gameOver = true;
+      displayControl.disableControls();
     }
   },
 
   alertWinner: function () {
     this.gameOver = true;
     alert(`${this.activePlayer} wins`);
+    displayControl.disableControls();
+
   }
 }
 
@@ -134,6 +156,27 @@ const displayControl = {
     squares.forEach(square => {
       square.textContent = game.gameboard[square.dataset.indexNumber];
     })
+  },
+
+  disableControls: function () {
+    const container = document.querySelector('.container');
+    container.style.pointerEvents = 'none';
+  },
+
+  crossLine: function (inter) {
+    let crossedLine = inter.split('');
+    console.log(crossedLine);
+    crossedLine.forEach(crossed => {
+      const squares = document.querySelectorAll('.square');
+      squares.forEach(square => {
+        if (square.dataset.indexNumber === crossed) {
+          square.style.backgroundColor = 'black';
+          square.style.color = 'white';
+        }
+      })
+    })
+
+
   }
 
 }
@@ -152,3 +195,6 @@ window.addEventListener('DOMContentLoaded', displayControl.renderGrid)
 // 1. Создать пустое поле для игры.
 // 2. Нажатие на клетку должно менять значение в массиве
 // 3. Поле должно перезагружаться и отображать значения из массива
+
+// Проверка победы
+
